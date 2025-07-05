@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget strings -->
+    <string name="widget_description">Widget del clima con emotes de League of Legends</string>
+    <string name="widget_name">LoL Weather Widget</string>
+</resources>

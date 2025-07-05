@@ -14,11 +14,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,14 +30,24 @@ import org.koin.androidx.compose.koinViewModel
 
 /**
  * 🎮 Pantalla principal de LoL Weather
- * ¡Diseño mejorado con geolocalización automática!
+ * ¡ACTUALIZADA con búsqueda de ciudades!
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(
+    selectedCity: String? = null, // 🔍 NUEVA: ciudad seleccionada desde búsqueda
+    onNavigateToForecast: () -> Unit = {},
+    onNavigateToSearch: () -> Unit = {}, // 🔍 NUEVA: navegación a búsqueda
     viewModel: WeatherViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // 🔍 NUEVA: Efecto para cargar ciudad seleccionada
+    LaunchedEffect(selectedCity) {
+        selectedCity?.let { cityName ->
+            viewModel.getWeatherByCity(cityName)
+        }
+    }
 
     // 📍 Launcher para solicitar permisos de ubicación
     val locationPermissionLauncher = rememberLauncherForActivityResult(
@@ -44,26 +55,28 @@ fun WeatherScreen(
     ) { permissions ->
         val granted = permissions.values.any { it }
         if (granted) {
-            // Si se concedieron permisos, actualizar con ubicación
             viewModel.refreshWithLocation()
         } else {
-            // Si no se concedieron, usar Valencia como fallback
             viewModel.getWeatherByCity("Valencia")
         }
     }
 
-    // 🚀 Solicitar permisos al iniciar si no los tenemos
+    // 🚀 Solicitar permisos al iniciar si no los tenemos y no hay ciudad seleccionada
     LaunchedEffect(Unit) {
-        if (!viewModel.hasLocationPermission()) {
+        if (selectedCity == null && !viewModel.hasLocationPermission()) {
             locationPermissionLauncher.launch(viewModel.getRequiredPermissions())
         }
     }
 
     // 🎨 Fondo con gradiente que cambia según la temperatura
+    val backgroundGradient = remember(uiState.weatherInfo?.temperature) {
+        WeatherUtils.getGradientForTemperature(uiState.weatherInfo?.temperature)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(getGradientForTemperature(uiState.weatherInfo?.temperature))
+            .background(backgroundGradient)
     ) {
         Column(
             modifier = Modifier
@@ -71,7 +84,7 @@ fun WeatherScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🔝 Barra superior
+            // 🔝 Barra superior ACTUALIZADA con botón de búsqueda
             TopAppBar(
                 title = {
                     Text(
@@ -82,13 +95,37 @@ fun WeatherScreen(
                     )
                 },
                 actions = {
+                    // 🔍 ¡NUEVO BOTÓN DE BÚSQUEDA ÉPICO!
+                    IconButton(onClick = onNavigateToSearch) {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "Buscar ciudad",
+                            tint = Color.White
+                        )
+                    }
+
+                    // 📅 Botón de pronóstico
+                    IconButton(onClick = onNavigateToForecast) {
+                        Icon(
+                            Icons.Default.DateRange,
+                            contentDescription = "Ver pronóstico 5 días",
+                            tint = Color.White
+                        )
+                    }
+
+                    // 📍 Botón de refresh
                     IconButton(onClick = {
-                        // 📍 Refresh usando ubicación automáticamente
-                        viewModel.refresh()
+                        if (selectedCity != null) {
+                            // Si hay ciudad seleccionada, refrescar esa ciudad
+                            viewModel.getWeatherByCity(selectedCity)
+                        } else {
+                            // Si no, usar ubicación
+                            viewModel.refresh()
+                        }
                     }) {
                         Icon(
                             Icons.Default.Refresh,
-                            contentDescription = "Actualizar ubicación",
+                            contentDescription = "Actualizar",
                             tint = Color.White
                         )
                     }
@@ -101,21 +138,31 @@ fun WeatherScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // 📱 Contenido principal
-            val currentState = uiState
             when {
-                currentState.isLoading -> {
+                uiState.isLoading -> {
                     LoadingContent()
                 }
 
-                currentState.error != null -> {
+                uiState.error != null -> {
                     ErrorContent(
-                        error = currentState.error,
-                        onRetry = { viewModel.refresh() }
+                        error = uiState.error!!,
+                        onRetry = {
+                            if (selectedCity != null) {
+                                viewModel.getWeatherByCity(selectedCity)
+                            } else {
+                                viewModel.refresh()
+                            }
+                        }
                     )
                 }
 
-                currentState.weatherInfo != null -> {
-                    WeatherContent(weatherInfo = currentState.weatherInfo)
+                uiState.weatherInfo != null -> {
+                    WeatherContent(
+                        weatherInfo = uiState.weatherInfo!!,
+                        isCustomCity = selectedCity != null, // 🔍 NUEVA: indicador de ciudad personalizada
+                        onViewForecast = onNavigateToForecast,
+                        onSearchCity = onNavigateToSearch // 🔍 NUEVA: búsqueda desde contenido
+                    )
                 }
             }
         }
@@ -123,10 +170,15 @@ fun WeatherScreen(
 }
 
 /**
- * 🌤️ Contenido principal del clima - DISEÑO MEJORADO
+ * 🌤️ Contenido principal del clima - ACTUALIZADO con indicadores de ciudad
  */
 @Composable
-fun WeatherContent(weatherInfo: WeatherInfo) {
+fun WeatherContent(
+    weatherInfo: WeatherInfo,
+    isCustomCity: Boolean = false, // 🔍 NUEVA: indica si es ciudad buscada
+    onViewForecast: () -> Unit = {},
+    onSearchCity: () -> Unit = {} // 🔍 NUEVA: función de búsqueda
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
@@ -143,7 +195,7 @@ fun WeatherContent(weatherInfo: WeatherInfo) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ✨ Pequeño indicador de ubicación
+        // ✨ Indicador de ubicación ACTUALIZADO
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -155,7 +207,7 @@ fun WeatherContent(weatherInfo: WeatherInfo) {
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = "Tu ubicación",
+                text = if (isCustomCity) "Ciudad seleccionada" else "Tu ubicación",
                 fontSize = 14.sp,
                 color = Color.White.copy(alpha = 0.7f),
                 fontWeight = FontWeight.Light
@@ -205,7 +257,65 @@ fun WeatherContent(weatherInfo: WeatherInfo) {
             letterSpacing = 0.5.sp
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // 🔍 NUEVA: Botón de búsqueda de ciudades si no es personalizada
+        if (!isCustomCity) {
+            Button(
+                onClick = onSearchCity,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 20.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White.copy(alpha = 0.15f),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(28.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "🔍 Buscar otra ciudad",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // 📅 Botón de pronóstico
+        Button(
+            onClick = onViewForecast,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(horizontal = 20.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White.copy(alpha = 0.2f),
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(28.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "📅 Ver Pronóstico 5 Días",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         // 📊 Card con detalles mejorado
         Card(
@@ -223,7 +333,7 @@ fun WeatherContent(weatherInfo: WeatherInfo) {
             ) {
                 WeatherDetailRow(
                     label = "Sensación",
-                    value = "${weatherInfo.feelsLike.toInt()}°",
+                    value = WeatherUtils.formatTemperature(weatherInfo.feelsLike),
                     icon = "🌡️"
                 )
 
@@ -374,47 +484,6 @@ fun WeatherDetailRow(
             color = Color.White,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
-        )
-    }
-}
-
-/**
- * 🎨 Obtiene el gradiente según la temperatura
- * Cada rango tiene colores únicos inspirados en LoL
- */
-@Composable
-fun getGradientForTemperature(temperature: Double?): Brush {
-    return when {
-        temperature == null -> Brush.verticalGradient(
-            colors = listOf(Color(0xFF2196F3), Color(0xFF21CBF3))
-        )
-        // ❄️ Congelándote (bajo 0°)
-        temperature < 0 -> Brush.verticalGradient(
-            colors = listOf(Color(0xFF0D47A1), Color(0xFF1976D2))
-        )
-        // 🧊 Frío (0-10°)
-        temperature < 10 -> Brush.verticalGradient(
-            colors = listOf(Color(0xFF1565C0), Color(0xFF42A5F5))
-        )
-        // 😊 Fresco (10-18°)
-        temperature < 18 -> Brush.verticalGradient(
-            colors = listOf(Color(0xFF0277BD), Color(0xFF29B6F6))
-        )
-        // 😎 Perfecto (18-25°)
-        temperature < 25 -> Brush.verticalGradient(
-            colors = listOf(Color(0xFF2E7D32), Color(0xFF66BB6A))
-        )
-        // 😅 Calorcito (25-32°)
-        temperature < 32 -> Brush.verticalGradient(
-            colors = listOf(Color(0xFFF57F17), Color(0xFFFFCA28))
-        )
-        // 🥵 Calor (32-38°)
-        temperature < 38 -> Brush.verticalGradient(
-            colors = listOf(Color(0xFFE65100), Color(0xFFFF9800))
-        )
-        // 🔥 ¡Te derrites! (38°+)
-        else -> Brush.verticalGradient(
-            colors = listOf(Color(0xFFD84315), Color(0xFFFF5722))
         )
     }
 }

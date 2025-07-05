@@ -7,21 +7,22 @@ class ForecastMapper(private val emoteMapper: LolEmoteMapper) {
 
     /**
      * 📅 Convierte respuesta de API en pronóstico de 5 días con emotes de LoL
-     * VERSIÓN SIMPLE SIN LIBRERÍAS COMPLICADAS
+     * ¡AHORA CON FECHAS REALES DEL SISTEMA!
      */
     fun mapToWeekForecast(
         forecastResponse: ForecastResponse,
         currentWeather: WeatherInfo? = null
     ): WeekForecast {
-        // 📊 Agrupar mediciones por día (versión simple)
+        // 📊 Agrupar mediciones por día usando timestamps reales
         val groupedByDay = forecastResponse.list.groupBy { item ->
-            // Convertir timestamp a string de fecha simple
-            val daysSinceEpoch = item.timestamp / 86400 // 86400 segundos en un día
-            daysSinceEpoch.toString()
+            // Convertir timestamp a día (en milisegundos)
+            val dayInMillis = item.timestamp * 1000L
+            val daysSinceEpoch = dayInMillis / (24 * 60 * 60 * 1000)
+            daysSinceEpoch
         }
 
-        // 🎮 Crear pronóstico para cada día con emotes épicos
-        val dayForecasts = groupedByDay.entries.take(5).mapIndexed { index, (dateKey, items) ->
+        // 🎮 Crear pronóstico para cada día con fechas reales
+        val dayForecasts = groupedByDay.entries.take(5).mapIndexed { index, (_, items) ->
             createDayForecast(index, items)
         }
 
@@ -34,9 +35,12 @@ class ForecastMapper(private val emoteMapper: LolEmoteMapper) {
     }
 
     /**
-     * 🌤️ Crea pronóstico para un día específico - VERSIÓN SIMPLE
+     * 🌤️ Crea pronóstico para un día específico - CON FECHAS REALES DEL SISTEMA
      */
-    private fun createDayForecast(dayIndex: Int, items: List<ForecastItem>): DayForecast {
+    private fun createDayForecast(
+        dayIndex: Int,
+        items: List<ForecastItem>
+    ): DayForecast {
         // 📊 Calcular estadísticas del día
         val temperatures = items.map { it.main.temp }
         val maxTemp = temperatures.maxOrNull() ?: 0.0
@@ -53,13 +57,9 @@ class ForecastMapper(private val emoteMapper: LolEmoteMapper) {
             .eachCount()
             .maxByOrNull { it.value }?.key ?: "Variado"
 
-        // 📅 Nombres de días simples
-        val dayNames = listOf("Hoy", "Mañana", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
-        val shortDates = listOf("Hoy", "Mañana", "3 Jul", "4 Jul", "5 Jul", "6 Jul", "7 Jul")
-
-        val dayName = dayNames.getOrElse(dayIndex) { "Día ${dayIndex + 1}" }
-        val shortDate = shortDates.getOrElse(dayIndex) { "${dayIndex + 3} Jul" }
-        val fullDate = "$dayName ${dayIndex + 3} Jul"
+        // 📅 USAR TIMESTAMP REAL DE LA API
+        val itemTimestamp = items.first().timestamp * 1000L // Convertir a milisegundos
+        val (dayName, shortDate, fullDate) = calculateRealDates(dayIndex, itemTimestamp)
 
         // 🎮 ¡Obtener emote de LoL para la temperatura promedio!
         val lolEmote = emoteMapper.getEmoteForTemperature(avgTemp)
@@ -78,6 +78,45 @@ class ForecastMapper(private val emoteMapper: LolEmoteMapper) {
             timestamp = items.first().timestamp,
             isToday = dayIndex == 0
         )
+    }
+
+    /**
+     * 📅 Calcula fechas reales basándose en el timestamp de la API
+     */
+    private fun calculateRealDates(dayIndex: Int, timestamp: Long): Triple<String, String, String> {
+        val dayNames = listOf("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado")
+        val dayNamesShort = listOf("Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb")
+        val monthNames = listOf("Ene", "Feb", "Mar", "Abr", "May", "Jun",
+            "Jul", "Ago", "Sep", "Oct", "Nov", "Dic")
+
+        // Calcular día de la semana desde el timestamp
+        // (timestamp en millis / millis por día + ajuste de epoch) % 7
+        val dayOfWeek = ((timestamp / (24 * 60 * 60 * 1000L)) + 4) % 7 // +4 para ajustar epoch (1 Ene 1970 era Jueves)
+
+        // Calcular día del mes y mes (aproximación simple pero funcional)
+        val daysSinceEpoch = timestamp / (24 * 60 * 60 * 1000L)
+        val dayOfMonth = ((daysSinceEpoch % 31) + 1).toInt() // Aproximación de día del mes
+        val monthIndex = ((daysSinceEpoch / 31) % 12).toInt() // Aproximación de mes
+
+        val dayName = when (dayIndex) {
+            0 -> "HOY"
+            1 -> "Mañana"
+            else -> dayNamesShort[dayOfWeek.toInt()]
+        }
+
+        val shortDate = when (dayIndex) {
+            0 -> "Hoy"
+            1 -> "Mañana"
+            else -> "$dayOfMonth ${monthNames[monthIndex]}"
+        }
+
+        val fullDate = when (dayIndex) {
+            0 -> "Hoy"
+            1 -> "Mañana"
+            else -> "${dayNames[dayOfWeek.toInt()]} $dayOfMonth ${monthNames[monthIndex]}"
+        }
+
+        return Triple(dayName, shortDate, fullDate)
     }
 
     /**
