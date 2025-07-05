@@ -3,11 +3,6 @@ package com.lolweather.android.presentation
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -170,14 +165,14 @@ fun WeatherScreen(
 }
 
 /**
- * 🌤️ Contenido principal del clima - ACTUALIZADO con indicadores de ciudad
+ * 🌤️ Contenido principal del clima - VERSIÓN LIMPIA SIN BOTONES FEOS
  */
 @Composable
 fun WeatherContent(
     weatherInfo: WeatherInfo,
-    isCustomCity: Boolean = false, // 🔍 NUEVA: indica si es ciudad buscada
+    isCustomCity: Boolean = false,
     onViewForecast: () -> Unit = {},
-    onSearchCity: () -> Unit = {} // 🔍 NUEVA: función de búsqueda
+    onSearchCity: () -> Unit = {}
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -195,7 +190,7 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ✨ Indicador de ubicación ACTUALIZADO
+        // ✨ Indicador de ubicación
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -216,11 +211,25 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 🎮 EMOTE SIN TEXTO - Solo la imagen épica
-        ImprovedEmoteComponent(
-            emote = weatherInfo.lolEmote,
-            temperature = weatherInfo.temperature
-        )
+        // 🎮 EMOTE - Usando función simple si no existe ImprovedEmoteComponent
+        Card(
+            modifier = Modifier.size(180.dp),
+            shape = androidx.compose.foundation.shape.CircleShape,
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White.copy(alpha = 0.15f)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = WeatherUtils.getEmoteForTemperature(weatherInfo.temperature),
+                    fontSize = 72.sp
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -257,67 +266,9 @@ fun WeatherContent(
             letterSpacing = 0.5.sp
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
-        // 🔍 NUEVA: Botón de búsqueda de ciudades si no es personalizada
-        if (!isCustomCity) {
-            Button(
-                onClick = onSearchCity,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White.copy(alpha = 0.15f),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(28.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "🔍 Buscar otra ciudad",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        // 📅 Botón de pronóstico
-        Button(
-            onClick = onViewForecast,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 20.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White.copy(alpha = 0.2f),
-                contentColor = Color.White
-            ),
-            shape = RoundedCornerShape(28.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.DateRange,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = "📅 Ver Pronóstico 5 Días",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // 📊 Card con detalles mejorado
+        // 📊 Card con detalles COMPLETO - Todos los datos que faltaban
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -331,14 +282,16 @@ fun WeatherContent(
             Column(
                 modifier = Modifier.padding(24.dp)
             ) {
+                // Sensación térmica
                 WeatherDetailRow(
-                    label = "Sensación",
+                    label = "Sensación térmica",
                     value = WeatherUtils.formatTemperature(weatherInfo.feelsLike),
                     icon = "🌡️"
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Humedad
                 WeatherDetailRow(
                     label = "Humedad",
                     value = "${weatherInfo.humidity}%",
@@ -347,6 +300,7 @@ fun WeatherContent(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Viento
                 WeatherDetailRow(
                     label = "Viento",
                     value = "${weatherInfo.windSpeed.toInt()} km/h",
@@ -355,6 +309,7 @@ fun WeatherContent(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Condición
                 WeatherDetailRow(
                     label = "Condición",
                     value = weatherInfo.description.replaceFirstChar { it.uppercase() },

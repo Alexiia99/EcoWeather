@@ -24,6 +24,7 @@ kotlin {
         summary = "LoL Weather Shared Module"
         homepage = "Link to a Kotlin/Native module homepage"
         version = "1.0"
+
         ios.deploymentTarget = "14.1"
         podfile = project.file("../iosApp/Podfile")
         framework {

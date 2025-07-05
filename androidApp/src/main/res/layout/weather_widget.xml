@@ -4,16 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/widget_background"
-    android:padding="16dp"
+    android:background="@drawable/widget_background_improved"
+    android:padding="20dp"
     android:gravity="center">
 
-    <!-- 🔝 HEADER -->
+    <!-- 🔝 HEADER MEJORADO -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:background="@drawable/header_background"
+        android:padding="12dp">
+
+        <!-- Indicador de ubicación -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📍"
+            android:textSize="12sp"
+            android:layout_marginEnd="6dp" />
 
         <TextView
             android:id="@+id/widget_city"
@@ -22,140 +32,266 @@
             android:layout_weight="1"
             android:text="Valencia"
             android:textColor="#FFFFFF"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:ellipsize="end"
             android:maxLines="1" />
 
         <ImageButton
             android:id="@+id/widget_refresh_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="@android:color/transparent"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/ic_refresh"
             android:src="@drawable/ic_refresh"
             android:contentDescription="Actualizar"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:padding="6dp" />
 
     </LinearLayout>
 
-    <!-- 📊 CONTENIDO PRINCIPAL -->
+    <!-- 📊 CONTENIDO PRINCIPAL MEJORADO -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="8dp">
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
 
-        <!-- 🎮 EMOTE Y TEMPERATURA -->
+        <!-- 🎮 EMOTE GRANDE -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:background="@drawable/emote_background"
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/widget_emote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="😎"
-                android:textSize="32sp"
+                android:textSize="48sp"
                 android:gravity="center" />
-
-            <TextView
-                android:id="@+id/widget_temperature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="23°"
-                android:textColor="#FFFFFF"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginTop="4dp" />
 
         </LinearLayout>
 
-        <!-- 📝 DETALLES -->
+        <!-- 🌡️ TEMPERATURA Y DETALLES -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:layout_marginStart="20dp"
+            android:gravity="center">
 
+            <!-- Temperatura principal -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/widget_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="31"
+                    android:textColor="#FFFFFF"
+                    android:textSize="42sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="°C"
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="normal"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="-8dp" />
+
+            </LinearLayout>
+
+            <!-- Descripción del clima -->
             <TextView
                 android:id="@+id/widget_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cielo claro"
+                android:text="Calorcito"
                 android:textColor="#FFFFFF"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="4dp"
                 android:ellipsize="end"
                 android:maxLines="1" />
 
-            <LinearLayout
+            <!-- Sensación térmica -->
+            <TextView
+                android:id="@+id/widget_feels_like"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="4dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="💧"
-                    android:textSize="10sp" />
-
-                <TextView
-                    android:id="@+id/widget_humidity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="65%"
-                    android:textColor="#FFFFFF"
-                    android:textSize="10sp"
-                    android:layout_marginStart="4dp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="2dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="💨"
-                    android:textSize="10sp" />
-
-                <TextView
-                    android:id="@+id/widget_wind"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="12 km/h"
-                    android:textColor="#FFFFFF"
-                    android:textSize="10sp"
-                    android:layout_marginStart="4dp" />
-
-            </LinearLayout>
+                android:text="Sensación 34°"
+                android:textColor="#CCFFFFFF"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_marginTop="2dp" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <!-- ⏰ PIE -->
-    <TextView
-        android:id="@+id/widget_last_update"
+    <!-- 📊 DETALLES EN GRID HORIZONTAL -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Actualizado: 14:30"
-        android:textColor="#CCFFFFFF"
-        android:textSize="8sp"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="8dp"
-        android:ellipsize="end"
-        android:maxLines="1" />
+        android:background="@drawable/details_background"
+        android:padding="12dp">
+
+        <!-- Humedad -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💧"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/widget_humidity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="65%"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Humedad"
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp"
+                android:layout_marginTop="1dp" />
+
+        </LinearLayout>
+
+        <!-- Viento -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💨"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/widget_wind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="km/h"
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp"
+                android:layout_marginTop="1dp" />
+
+        </LinearLayout>
+
+        <!-- UV Index -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="☀️"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UV 8"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Índice"
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp"
+                android:layout_marginTop="1dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- ⏰ FOOTER CON BRANDING -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/footer_background"
+        android:padding="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎮"
+            android:textSize="14sp"
+            android:layout_marginEnd="6dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="LoL Weather"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/widget_last_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="14:30"
+            android:textColor="#CCFFFFFF"
+            android:textSize="10sp"
+            android:ellipsize="end"
+            android:maxLines="1" />
+
+    </LinearLayout>
 
 </LinearLayout>
