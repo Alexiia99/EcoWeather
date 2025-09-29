@@ -24,27 +24,24 @@ import domain.model.DayForecast
 import domain.model.WeekForecast
 import org.koin.androidx.compose.koinViewModel
 
-/**
- * 📅 PANTALLA ÉPICA DEL PRONÓSTICO DE 5 DÍAS
- * ¡ACTUALIZADA con búsqueda de ciudades!
- */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForecastScreen(
-    selectedCity: String? = null, // 🔍 NUEVA: ciudad seleccionada desde búsqueda
+    selectedCity: String? = null,
     onBackClick: () -> Unit,
     viewModel: ForecastViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // 🔍 NUEVA: Efecto para cargar pronóstico de ciudad seleccionada
+
     LaunchedEffect(selectedCity) {
         selectedCity?.let { cityName ->
             viewModel.getCompleteWeatherByCity(cityName)
         }
     }
 
-    // 🎨 Fondo dinámico basado en el clima predominante - SIN @Composable
+
     val backgroundGradient = remember(uiState.weekForecast) {
         getWeekGradient(uiState.weekForecast)
     }
@@ -59,7 +56,7 @@ fun ForecastScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // 🔝 Barra superior con título épico ACTUALIZADA
+
             TopAppBar(
                 title = {
                     Column {
@@ -79,7 +76,7 @@ fun ForecastScreen(
                                     fontSize = 14.sp
                                 )
 
-                                // 🔍 NUEVA: Indicador si es ciudad buscada
+
                                 if (selectedCity != null) {
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
@@ -107,7 +104,7 @@ fun ForecastScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 📱 Contenido principal
+
             when {
                 uiState.isLoading -> {
                     ForecastLoadingContent()
@@ -129,14 +126,14 @@ fun ForecastScreen(
 }
 
 /**
- * 🎮 CONTENIDO PRINCIPAL DEL PRONÓSTICO
+ *  CONTENIDO PRINCIPAL DEL PRONÓSTICO
  */
 @Composable
 fun ForecastMainContent(weekForecast: WeekForecast) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // 📊 GRÁFICO DE TEMPERATURAS
+        //  GRÁFICO DE TEMPERATURAS
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -168,7 +165,7 @@ fun ForecastMainContent(weekForecast: WeekForecast) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 🎮 CARRUSEL HORIZONTAL DE DÍAS - ESPACIADO MEJORADO
+        //  CARRUSEL HORIZONTAL DE DÍAS
         Text(
             "🎮 Emotes de LoL por Día",
             color = Color.White,
@@ -199,7 +196,7 @@ fun ForecastMainContent(weekForecast: WeekForecast) {
 }
 
 /**
- * 🎯 TARJETA DE DÍA REDISEÑADA - ¡SIN DESBORDAMIENTOS!
+ *  TARJETA DE DÍA REDISEÑADA
  */
 @Composable
 fun DayForecastCard(
@@ -215,8 +212,8 @@ fun DayForecastCard(
 
     Card(
         modifier = modifier
-            .width(140.dp) // Más estrecha para evitar desbordamientos
-            .height(200.dp), // Más compacta
+            .width(140.dp)
+            .height(200.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(
@@ -226,11 +223,11 @@ fun DayForecastCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp), // Padding reducido
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly // Distribución uniforme
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            // 📅 SECCIÓN FECHA - Compacta
+            //  SECCIÓN FECHA
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -250,14 +247,8 @@ fun DayForecastCard(
                 }
             }
 
-            // 🎮 EMOTE DE LOL - Más pequeño
-            MiniEmoteComponent(
-                emote = dayForecast.lolEmote,
-                temperature = dayForecast.avgTemp,
-                modifier = Modifier.size(60.dp) // Reducido de 80dp
-            )
 
-            // 🌡️ TEMPERATURAS - Diseño limpio vertical
+            //  TEMPERATURAS
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

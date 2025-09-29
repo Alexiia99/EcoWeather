@@ -56,6 +56,8 @@ dependencies {
     // 📦 Módulo compartido
     implementation(project(":shared"))
 
+    implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.25")
+
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
     // 📍 Google Play Services para geolocalización

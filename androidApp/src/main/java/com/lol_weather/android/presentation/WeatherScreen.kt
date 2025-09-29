@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import com.lolweather.android.presentation.components.AnimatedWeatherIcon
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -79,11 +80,11 @@ fun WeatherScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🔝 Barra superior ACTUALIZADA con botón de búsqueda
+
             TopAppBar(
                 title = {
                     Text(
-                        "LoL Weather",
+                        "Eco Weather",
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         fontSize = 24.sp
@@ -211,29 +212,17 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 🎮 EMOTE - Usando función simple si no existe ImprovedEmoteComponent
-        Card(
-            modifier = Modifier.size(180.dp),
-            shape = androidx.compose.foundation.shape.CircleShape,
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White.copy(alpha = 0.15f)
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Text(
-                    text = WeatherUtils.getEmoteForTemperature(weatherInfo.temperature),
-                    fontSize = 72.sp
-                )
-            }
-        }
+        // Icono animado
+        AnimatedWeatherIcon(
+            temperature = weatherInfo.temperature,
+            size = 180,
+            useRandomGif = true,        // ¡Máxima variedad con todos tus GIFs!
+            modifier = Modifier
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // 🌡️ Temperatura con diseño más impactante
+        // Temperatura
         Row(
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.Center
@@ -256,9 +245,9 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 🎮 Descripción del emote más sutil
+        //  Descripción del emote
         Text(
-            text = weatherInfo.lolEmote.description,
+            text = WeatherUtils.getTemperatureDescription(weatherInfo.temperature),
             fontSize = 18.sp,
             color = Color.White.copy(alpha = 0.9f),
             textAlign = TextAlign.Center,
@@ -268,7 +257,7 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // 📊 Card con detalles COMPLETO - Todos los datos que faltaban
+        //  Card con detalles COMPLETO
         Card(
             modifier = Modifier
                 .fillMaxWidth()

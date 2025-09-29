@@ -4,7 +4,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 /**
- * 🛠️ Utilidades para el clima y UI
+ * 🛠️ Utilidades para el clima y UI - VERSIÓN ECO-MOTIVACIONAL COMPLETA
+ * ¡Ahora integrado con tus GIFs y mensajes eco-friendly + funciones para gráficos!
  */
 object WeatherUtils {
 
@@ -16,38 +17,38 @@ object WeatherUtils {
     }
 
     /**
-     * 🎨 Obtiene el gradiente según la temperatura
+     * 🎨 Obtiene el gradiente según la temperatura - Colores más naturales
      */
     fun getGradientForTemperature(temperature: Double?): Brush {
         return when {
             temperature == null -> Brush.verticalGradient(
                 colors = listOf(Color(0xFF2196F3), Color(0xFF21CBF3))
             )
-            // ❄️ Congelándote (bajo 0°)
+            // ❄️ Azules fríos naturales (bajo 0°)
             temperature < 0 -> Brush.verticalGradient(
                 colors = listOf(Color(0xFF0D47A1), Color(0xFF1976D2))
             )
-            // 🧊 Frío (0-10°)
+            // 🧊 Azules suaves (0-10°)
             temperature < 10 -> Brush.verticalGradient(
                 colors = listOf(Color(0xFF1565C0), Color(0xFF42A5F5))
             )
-            // 😊 Fresco (10-18°)
+            // 🌳 Verde bosque (10-18°)
             temperature < 18 -> Brush.verticalGradient(
-                colors = listOf(Color(0xFF0277BD), Color(0xFF29B6F6))
+                colors = listOf(Color(0xFF388E3C), Color(0xFF81C784))
             )
-            // 😎 Perfecto (18-25°)
+            // 😎 Verde natura (18-25°) - TEMPERATURA IDEAL
             temperature < 25 -> Brush.verticalGradient(
                 colors = listOf(Color(0xFF2E7D32), Color(0xFF66BB6A))
             )
-            // 😅 Calorcito (25-32°)
+            // 🌡️ Amarillo cálido (25-32°)
             temperature < 32 -> Brush.verticalGradient(
                 colors = listOf(Color(0xFFF57F17), Color(0xFFFFCA28))
             )
-            // 🥵 Calor (32-38°)
+            // 🥵 Naranja advertencia (32-38°)
             temperature < 38 -> Brush.verticalGradient(
                 colors = listOf(Color(0xFFE65100), Color(0xFFFF9800))
             )
-            // 🔥 ¡Te derrites! (38°+)
+            // 🔥 Rojo alarma (38°+)
             else -> Brush.verticalGradient(
                 colors = listOf(Color(0xFFD84315), Color(0xFFFF5722))
             )
@@ -55,37 +56,103 @@ object WeatherUtils {
     }
 
     /**
-     * 🎮 Obtiene emote para temperatura (compatible con tus emotes LoL)
+     * 🌱 Obtiene emote eco-friendly para temperatura (fallback para GIFs)
      */
     fun getEmoteForTemperature(temperature: Double): String {
-        return when {
-            temperature < 0 -> "🐧"    // Poro Helado
-            temperature < 10 -> "❄️"   // Frío
-            temperature < 18 -> "😊"   // Fresco
-            temperature < 25 -> "😎"   // Perfecto
-            temperature < 32 -> "😅"   // Calorcito
-            temperature < 38 -> "🥵"   // Calor
-            else -> "🔥"              // Te derrites
-        }
+        return EmoteMapping.getEmoteEmoji(temperature)
     }
 
     /**
-     * 🌤️ Descripción del clima por temperatura
+     * 🎬 NUEVO: Obtiene GIF animado para temperatura
+     */
+    fun getAnimatedIconName(temperature: Double): String {
+        return EmoteMapping.getAnimatedGifName(temperature)
+    }
+
+    /**
+     * 🎲 NUEVO: Obtiene GIF animado aleatorio para máxima variedad
+     */
+    fun getRandomAnimatedIconName(temperature: Double): String {
+        return EmoteMapping.getRandomAnimatedGifName(temperature)
+    }
+
+    /**
+     * 🌍 Nueva función principal: Descripción eco-motivacional aleatoria
+     * ¡ESTA ES LA FUNCIÓN PRINCIPAL QUE USARÁS!
+     */
+    fun getEcoMotivationalDescription(temperature: Double): String {
+        return EcoMotivationalMessages.getRandomMessage(temperature)
+    }
+
+    /**
+     * 💚 Obtiene específicamente mensaje eco-friendly
+     */
+    fun getEcoDescription(temperature: Double): String {
+        return EcoMotivationalMessages.getEcoMessage(temperature)
+    }
+
+    /**
+     * 💪 Obtiene específicamente mensaje motivacional
+     */
+    fun getMotivationalDescription(temperature: Double): String {
+        return EcoMotivationalMessages.getMotivationalMessage(temperature)
+    }
+
+    /**
+     * 🌤️ Descripción del clima por temperatura (ACTUALIZADA)
+     * Ahora usa el sistema eco-motivacional
      */
     fun getTemperatureDescription(temperature: Double): String {
+        return getEcoMotivationalDescription(temperature)
+    }
+
+    /**
+     * 🏷️ Obtiene etiqueta corta para la temperatura
+     */
+    fun getTemperatureLabel(temperature: Double): String {
         return when {
-            temperature < 0 -> "¡Congelándote!"
-            temperature < 10 -> "Frío pero manejable"
-            temperature < 18 -> "Clima perfecto para salir"
-            temperature < 25 -> "¡Temperatura ideal!"
-            temperature < 32 -> "Empezando a sudar..."
-            temperature < 38 -> "¡Qué calor hace!"
-            else -> "¡Me estoy derritiendo!"
+            temperature < 0 -> "Helando"
+            temperature < 10 -> "Frío"
+            temperature < 18 -> "Fresco"
+            temperature < 25 -> "Perfecto"
+            temperature < 32 -> "Cálido"
+            temperature < 38 -> "Calor"
+            else -> "Extremo"
         }
     }
 
     /**
-     * 📊 Normaliza la altura de temperatura para gráficos (0.0 a 1.0)
+     * 🎨 Obtiene color del texto según la temperatura
+     */
+    fun getTemperatureTextColor(temperature: Double): Color {
+        return when {
+            temperature < 0 -> Color(0xFF1976D2)   // Azul frío
+            temperature < 10 -> Color(0xFF42A5F5)  // Azul claro
+            temperature < 18 -> Color(0xFF4CAF50)  // Verde bosque
+            temperature < 25 -> Color(0xFF66BB6A)  // Verde natural
+            temperature < 32 -> Color(0xFFFFCA28)  // Amarillo cálido
+            temperature < 38 -> Color(0xFFFF9800)  // Naranja
+            else -> Color(0xFFFF5722)              // Rojo intenso
+        }
+    }
+
+    /**
+     * 🎨 Obtiene color específico para una temperatura (PARA GRÁFICOS)
+     */
+    fun getTemperatureColor(temperature: Double): Color {
+        return when {
+            temperature < 0 -> Color(0xFF1976D2)   // Azul intenso
+            temperature < 10 -> Color(0xFF42A5F5)  // Azul medio
+            temperature < 18 -> Color(0xFF4CAF50)  // Verde bosque
+            temperature < 25 -> Color(0xFF8BC34A)  // Verde claro
+            temperature < 32 -> Color(0xFFFFEB3B)  // Amarillo
+            temperature < 38 -> Color(0xFFFF9800)  // Naranja
+            else -> Color(0xFFE53935)              // Rojo
+        }
+    }
+
+    /**
+     * 📊 Normaliza altura de temperatura para gráficos (0.0 a 1.0)
      */
     fun normalizeTemperatureHeight(
         temperature: Double,
@@ -93,29 +160,57 @@ object WeatherUtils {
         maxTemp: Double
     ): Double {
         if (maxTemp == minTemp) return 0.5
-        return ((temperature - minTemp) / (maxTemp - minTemp)).coerceIn(0.2, 1.0)
+        return ((temperature - minTemp) / (maxTemp - minTemp)).coerceIn(0.2, 0.9)
     }
 
     /**
-     * 🎨 Color según temperatura para gráficos
+     * 🌈 Gradiente para toda la semana basado en temperaturas extremas
      */
-    fun getTemperatureColor(temperature: Double): Color {
+    fun getWeekGradient(maxWeekTemp: Double, minWeekTemp: Double): Brush {
         return when {
-            temperature < 0 -> Color(0xFF3B82F6)   // Azul frío
-            temperature < 10 -> Color(0xFF0EA5E9)  // Azul claro
-            temperature < 18 -> Color(0xFF10B981)  // Verde
-            temperature < 25 -> Color(0xFF22C55E)  // Verde claro
-            temperature < 32 -> Color(0xFFF59E0B)  // Amarillo/naranja
-            temperature < 38 -> Color(0xFFEF4444)  // Rojo
-            else -> Color(0xFFDC2626)              // Rojo intenso
+            // Semana muy fría
+            maxWeekTemp < 10 -> Brush.verticalGradient(
+                colors = listOf(Color(0xFF0D47A1), Color(0xFF1976D2))
+            )
+            // Semana fría
+            maxWeekTemp < 18 -> Brush.verticalGradient(
+                colors = listOf(Color(0xFF1565C0), Color(0xFF42A5F5))
+            )
+            // Semana perfecta
+            maxWeekTemp < 25 -> Brush.verticalGradient(
+                colors = listOf(Color(0xFF2E7D32), Color(0xFF66BB6A))
+            )
+            // Semana cálida
+            maxWeekTemp < 32 -> Brush.verticalGradient(
+                colors = listOf(Color(0xFFF57F17), Color(0xFFFFCA28))
+            )
+            // Semana caliente
+            else -> Brush.verticalGradient(
+                colors = listOf(Color(0xFFE65100), Color(0xFFFF5722))
+            )
         }
     }
 
     /**
-     * 🌈 Gradiente para semana completa
+     * 📊 Información sobre el sistema de mensajes
      */
-    fun getWeekGradient(maxWeekTemp: Double, minWeekTemp: Double): Brush {
-        val avgTemp = (maxWeekTemp + minWeekTemp) / 2.0
-        return getGradientForTemperature(avgTemp)
+    fun getSystemInfo(): String {
+        return EcoMotivationalMessages.getMessageStats()
+    }
+
+    /**
+     * 🎬 Información sobre la colección de GIFs
+     */
+    fun getGifSystemInfo(): String {
+        return EmoteMapping.getGifCollectionStats()
+    }
+
+    /**
+     * 🔄 Función de compatibilidad con versiones anteriores
+     * Redirige a la nueva función eco-motivacional
+     */
+    @Deprecated("Usa getEcoMotivationalDescription() en su lugar")
+    fun getWeatherMood(temperature: Double): String {
+        return getEcoMotivationalDescription(temperature)
     }
 }

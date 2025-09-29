@@ -10,7 +10,7 @@
     <application
         android:allowBackup="true"
 
-        android:label="LoL Weather"
+        android:label="Eco Weather"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
         android:usesCleartextTraffic="true">
 
